@@ -1,4 +1,4 @@
-// INF1002 Programming Fundamentals — Class Management System (CMS)
+// INF1002 Programming Fundamentals ï¿½ Class Management System (CMS)
 // Reference implementation for learning/comparison only. Do not submit verbatim.
 // 
 // Features implemented (maps to brief):
@@ -116,20 +116,27 @@ static int parseDataLine(const char* line, Student* out) {
     return 1;
 }
 
-static int loadDatabase(const char* filename) {
-    FILE* f = fopen(filename, "r");
-    if (!f) { printf("CMS: Failed to open '%s' for reading.\n", filename); return 0; }
-    dbCount = 0;
+static int loadDatabase(void) {
+    FILE* f = fopen("Databasefile.txt", "r");
+    if (!f) { printf("CMS: Failed to open 'Databasefile.txt' for reading.\n"); return 0; }
+    
+    printf("\nRecords in Databasefile.txt:\n");
+    printHeader();
+    
     char line[512];
+    int recordCount = 0;
     while (fgets(line, sizeof(line), f)) {
         Student s;
         if (parseDataLine(line, &s)) {
-            if (dbCount < MAX_STUDENTS) db[dbCount++] = s;
+            printOne(&s);
+            recordCount++;
         }
     }
     fclose(f);
-    strncpy(openedFile, filename, sizeof(openedFile) - 1); openedFile[sizeof(openedFile) - 1] = '\0';
-    printf("CMS: The database file '%s' is successfully opened. Records loaded: %d\n", openedFile, dbCount);
+    if (recordCount == 0) {
+        printf("No records found in database.\n");
+    }
+    printf("\nTotal records displayed: %d\n", recordCount);
     return 1;
 }
 
@@ -274,7 +281,7 @@ static int parseIdToken(const char* line, int* outId) {
 
 static void printHelp(void) {
     printf("\nCommands:\n");
-    printf("  OPEN <filename>\n");
+    printf("  OPEN                                 : display records from Databasefile.txt\n");
     printf("  SHOW ALL\n");
     printf("  SHOW ALL SORT BY ID ASC|DESC\n");
     printf("  SHOW ALL SORT BY MARK ASC|DESC\n");
@@ -292,7 +299,7 @@ static void printHelp(void) {
 
 static void printDeclaration(void) {
     printf("Declaration\n");
-    printf("SIT’s policy on copying does not allow students to copy source code or assessment solutions from another person, AI, or other places.\n");
+    printf("SITï¿½s policy on copying does not allow students to copy source code or assessment solutions from another person, AI, or other places.\n");
     printf("We hereby declare that we understand and agree to the policy and did not copy or share our code.\n");
     printf("We agree that our project will receive zero if plagiarism is detected.\n");
     printf("We agree that we did not copy any code directly from AI-generated sources.\n\n");
@@ -315,10 +322,7 @@ int main(void) {
         for (char* p = cmd; *p; ++p) *p = (char)toupper((unsigned char)*p);
 
         if (strcmp(cmd, "OPEN") == 0) {
-            char* fn = line + 4; // after OPEN
-            fn = (char*)lstrip(fn);
-            if (*fn == '\0') { printf("CMS: Usage: OPEN <filename>\n"); continue; }
-            loadDatabase(fn);
+            loadDatabase();
         }
         else if (strcmp(cmd, "SHOW") == 0) {
             if (strncasecmp(arg1, "ALL", 3) == 0) {
