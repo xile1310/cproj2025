@@ -13,5 +13,7 @@ void cms_update(int id);
 void cms_delete(int id);
 void cms_summary(void);
 void cms_grade(int id);
+void cms_top_percent(float percent);
+
 
 #endif
