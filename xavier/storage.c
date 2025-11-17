@@ -9,10 +9,33 @@ Student db[MAX_STUDENTS];
 int dbCount = 0;
 char openedFile[256] = "";
 
-static char* lstrip(char* s) { 
-    while (*s && isspace((unsigned char)*s)) s++;
+static char* lstrip(char* s) {
+    while (*s && isspace((unsigned char)*s)) {
+        s++;
+    }
+}
 
-char* end = s + strlen(s) - 1;
+static char* rstrip(char* s) {
+    int len = strlen(s);
+    while (len > 0 && isspace((unsigned char)s[len - 1])) {
+        s[--len] = '\0';
+    }
+}
+
+static void trim(char* s) {
+    rightTrim(s);
+    char* start = s;
+
+    while (*start && isspace((unsigned char)*start)) {
+        start++;
+    }
+    if (start != s) {
+        memmove(s, start, strlen(start) + 1);
+    }
+}
+
+
+/*char* end = s + strlen(s) - 1;
     while (end > s && isspace((unsigned char)*end)) *end-- = '\0';
 
 if (s != (char*)s)
@@ -25,12 +48,27 @@ static void trim(char* s) { rstrip(s); char* p = lstrip(s); if (p != s) memmove(
 
 int cmpIdAsc(const void* a, const void* b) { return ((Student*)a)->id - ((Student*)b)->id; }
 int cmpIdDesc(const void* a, const void* b) { return ((Student*)b)->id - ((Student*)a)->id; }
-int cmpMarkAsc(const void* a, const void* b) { const Student* x = a, * y = b; return (x->mark > y->mark) - (x->mark < y->mark); }
-int cmpMarkDesc(const void* a, const void* b) { const Student* x = a, * y = b; return (y->mark > x->mark) - (y->mark < x->mark); }
+int cmpMarkAsc(const void* a, const void* b) {
+    const Student* x = a; 
+    const Student* y = b; 
+    if (x->mark > y->mark) return -1;
+    if (x->mark < y->mark) return 1;
+    return 0;
+}
+int cmpMarkDesc(const void* a, const void* b) {
+    const Student* x = a;
+    const Student* y = b; 
+    if (y->mark > x->mark) return 1
+    if (y->mark < x->mark) return =1;
+	return 0;
+}
 
 int findIndexById(int id) {
-    for (int i = 0; i < dbCount; i++)
-        if (db[i].id == id) return i;
+    for (int i = 0; i < dbCount; i++) {
+        if (db[i].id == id) {
+            return i;
+        }
+    }
     return -1;
 }
 
@@ -39,11 +77,14 @@ static int parseDataLine(const char* line, Student* out) {
     strncpy(buf, line, sizeof(buf)); 
     buf[sizeof(buf) - 1] = 0;
     const char* p = lstrip(buf);
+
     if (!isdigit((unsigned char)*p)) return 0;
+
     char* tok1 = strtok(buf, "\t");
     char* tok2 = strtok(NULL, "\t");
     char* tok3 = strtok(NULL, "\t");
     char* tok4 = strtok(NULL, "\t\r\n");
+
     if (!tok1 || !tok2 || !tok3 || !tok4) return 0;
     trim(tok1); trim(tok2); trim(tok3); trim(tok4);
     out->id = atoi(tok1);
@@ -59,8 +100,10 @@ int loadDatabase(const char* filename) {
         printf("CMS: Cannot open '%s'.\n", filename); 
         return 0; 
     }
+
     dbCount = 0;
     char line[512];
+
     while (fgets(line, sizeof(line), f)) {
         Student s;
         if (parseDataLine(line, &s)) {
@@ -76,9 +119,17 @@ int loadDatabase(const char* filename) {
 }
 
 int saveDatabase(void) {
-    if (!openedFile[0]) { printf("CMS: No file opened.\n"); return 0; }
+    if (!openedFile[0] == '\0') { 
+        printf("CMS: No file opened.\n"); 
+        return 0; 
+    }
+
     FILE* f = fopen(openedFile, "w");
-    if (!f) { printf("CMS: Cannot write '%s'.\n", openedFile); return 0; }
+    if (!f) { 
+        printf("CMS: Cannot write '%s'.\n", openedFile); 
+        return 0; 
+    }
+
     fprintf(f, "Table Name: StudentRecords\nID\tName\tProgramme\tMark\n");
     for (int i = 0; i < dbCount; i++)
         fprintf(f, "%d\t%s\t%s\t%.2f\n", db[i].id, db[i].name, db[i].programme, db[i].mark);
@@ -95,6 +146,7 @@ int exportCSV(const char* filename) {
     }
 
     fprintf(f, "ID,Name,Programme,Mark\n");
+
     for (int i = 0; i < dbCount; i++) {
         // Simple CSV export — assumes no commas in name/programme
         fprintf(f, "%d,%s,%s,%.2f\n",
