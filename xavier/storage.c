@@ -9,9 +9,19 @@ Student db[MAX_STUDENTS];
 int dbCount = 0;
 char openedFile[256] = "";
 
-static char* lstrip(char* s) { while (*s && isspace((unsigned char)*s)) s++; return s; }
-static void rstrip(char* s) { size_t n = strlen(s); while (n > 0 && isspace((unsigned char)s[n - 1])) s[--n] = '\0'; }
-static void trim(char* s) { rstrip(s); char* p = lstrip(s); if (p != s) memmove(s, p, strlen(p) + 1); }
+static char* lstrip(char* s) { 
+    while (*s && isspace((unsigned char)*s)) s++;
+
+char* end = s + strlen(s) - 1;
+    while (end > s && isspace((unsigned char)*end)) *end-- = '\0';
+
+if (s != (char*)s)
+        memmove((char*)s), s, strlen(s) + 1);
+ 
+}
+
+/*static void rstrip(char* s) { size_t n = strlen(s); while (n > 0 && isspace((unsigned char)s[n - 1])) s[--n] = '\0'; }
+static void trim(char* s) { rstrip(s); char* p = lstrip(s); if (p != s) memmove(s, p, strlen(p) + 1); }*/
 
 int cmpIdAsc(const void* a, const void* b) { return ((Student*)a)->id - ((Student*)b)->id; }
 int cmpIdDesc(const void* a, const void* b) { return ((Student*)b)->id - ((Student*)a)->id; }
@@ -25,7 +35,9 @@ int findIndexById(int id) {
 }
 
 static int parseDataLine(const char* line, Student* out) {
-    char buf[512]; strncpy(buf, line, sizeof(buf)); buf[sizeof(buf) - 1] = 0;
+    char buf[512]; 
+    strncpy(buf, line, sizeof(buf)); 
+    buf[sizeof(buf) - 1] = 0;
     const char* p = lstrip(buf);
     if (!isdigit((unsigned char)*p)) return 0;
     char* tok1 = strtok(buf, "\t");
@@ -43,13 +55,18 @@ static int parseDataLine(const char* line, Student* out) {
 
 int loadDatabase(const char* filename) {
     FILE* f = fopen(filename, "r");
-    if (!f) { printf("CMS: Cannot open '%s'.\n", filename); return 0; }
+    if (!f) { 
+        printf("CMS: Cannot open '%s'.\n", filename); 
+        return 0; 
+    }
     dbCount = 0;
     char line[512];
     while (fgets(line, sizeof(line), f)) {
         Student s;
         if (parseDataLine(line, &s)) {
-            if (dbCount < MAX_STUDENTS) db[dbCount++] = s;
+            if (dbCount < MAX_STUDENTS) {
+                db[dbCount++] = s;
+            }
         }
     }
     fclose(f);
