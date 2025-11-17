@@ -115,4 +115,86 @@ void cms_grade(int id) {
     if (idx == -1) { printf("CMS: ID=%d not found.\n", id); return; }
     printf("CMS: ID=%d, Name=%s, Mark=%.2f, Grade=%s\n",
         db[idx].id, db[idx].name, db[idx].mark, gradeBand(db[idx].mark));
+
+}
+
+
+void cms_toppercent(float percent) {
+    if (dbCount == 0) {
+        printf("CMS: No records.\n");
+        return;
+    }
+    if (percent <= 0 || percent > 100) {
+        printf("CMS: Invalid percent value.\n");
+        return;
+    }
+
+    printf("Choose mode:\n");
+    printf("1. Whole database\n");
+    printf("2. Specific programme\n");
+    printf("Enter choice: ");
+
+    int choice;
+    if (scanf("%d", &choice) != 1) {
+        while (getchar() != '\n');
+        printf("CMS: Invalid input.\n");
+        return;
+    }
+    while (getchar() != '\n');
+
+	Student* list = NULL;
+	int listcount = 0;
+    int count = 0;
+    if (choice == 2) {
+        char programme[MAX_PROG];
+        printf("Enter programme name: ");
+        fgets(programme, sizeof(programme), stdin);
+        programme[strcspn(programme, "\r\n")] = 0;
+
+        for (int i = 0; i < dbCount; i++) {
+            if (_stricmp(db[i].programme, programme) == 0)
+                listcount++;
+        }
+        if (listcount == 0) {
+            printf("CMS: No records found for programme '%s'.\n", programme);
+            return;
+        }
+        list = malloc(sizeof(Student) * listcount);
+        if (!list) {
+            printf("CMS: No records in memory .\n");
+            return;
+        }
+
+        int pos = 0;
+        for (int i = 0; i < dbCount; i++) {
+            if (_stricmp(db[i].programme, programme) == 0)
+                list[pos++] = db[i];
+        }
+
+        int count = (int)(listcount * (percent / 100.0f));
+        if (count < 1) count = 1;
+        printf("Top %.2f%% (%d students):\n", percent, count);
+        printHeader();
+        for (int i = 0; i < count; i++) {
+            printOne(&list[i]);
+        }
+
+    }
+    else {
+        listcount = dbCount;
+        list = malloc(sizeof(Student) * dbCount);
+        if (!list) {
+            printf("CMS: No records in memory .\n");
+            return;
+        }
+        memcpy(list, db, sizeof(Student) * dbCount);
+        qsort(list, dbCount, sizeof(Student), cmpMarkDesc);
+        count = (int)(dbCount * (percent / 100.0f));
+        if (count < 1) count = 1;
+        printf("Top %.2f%% (%d students):\n", percent, count);
+        printHeader();
+        for (int i = 0; i < count; i++)
+            printOne(&list[i]);
+        }
+    free(list);
 }
