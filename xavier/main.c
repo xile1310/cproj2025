@@ -22,10 +22,11 @@ static void printHelp(void) {
     printf("  QUERY ID=<id>\n");
     printf("  UPDATE ID=<id>\n");
     printf("  DELETE ID=<id>\n");
-    printf("  SHOW SUMMARY\n");
-    printf("  EXPORT CSV <filename>\n");
-    printf("  GRADE ID=<id>\n");
     printf("  SAVE\n");
+    printf("  SHOW SUMMARY\n");
+    printf("  GRADE ID=<id>\n");
+    printf("  TOPPERCENT <percent>\n");
+    printf("  EXPORT CSV <filename>\n");
     printf("  HELP\n");
     printf("  EXIT\n\n");
 }
@@ -100,6 +101,13 @@ int main(void) {
             int id; if (parseIdToken(line, &id)) cms_grade(id);
             else printf("CMS: Usage: GRADE ID=<id>\n");
         }
+        else if (strcmp(cmd, "TOPPERCENT") == 0) {
+            float percent; 
+            if (sscanf(line, "%*s %f", &percent) == 1)
+                cms_toppercent(percent);
+            else 
+                printf("CMS: Usage: TOPPERCENT <percent>\n");
+        }
         else if (strcmp(cmd, "HELP") == 0) printHelp();
         else if (strcmp(cmd, "EXIT") == 0 || strcmp(cmd, "QUIT") == 0) break;
         else printf("CMS: Unknown command. Type HELP.\n");
@@ -107,4 +115,5 @@ int main(void) {
 
     printf("Goodbye.\n");
     return 0;
+
 }
