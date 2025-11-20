@@ -46,6 +46,7 @@ int main(void) {
         // etc: "open", "Open", "OPEN" all will work
         for (char* p = cmd; *p; ++p) *p = (char)toupper(*p);
 
+        
         if (strcmp(cmd, "OPEN") == 0) {
             cms_openDatabase(line + 4);            // pass the rest of the line
         }
@@ -84,7 +85,7 @@ int main(void) {
         }
     }
 
-    // program ending (user typed either EXIT/QUIT/EOF)
+    // program ending (user typed either EXIT or QUIT or EOF)
     printf("Goodbye.\n");
     return 0;
 }
