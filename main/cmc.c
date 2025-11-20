@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <strings.h>          // for strcasecmp
+#define _stricmp strcasecmp   // alias to keep your existing code
 #include "cms.h"
 #include "storage.h"
 
