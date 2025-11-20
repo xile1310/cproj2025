@@ -3,7 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <strings.h>          
+#define _stricmp strcasecmp   
 #include "cms.h"
+
 
 static void printDeclaration(void) {
     printf("Declaration\n");
