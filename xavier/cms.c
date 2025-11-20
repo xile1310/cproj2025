@@ -99,16 +99,74 @@ void cms_delete(int id) {
 }
 
 void cms_summary(void) {
-    if (dbCount == 0) { printf("CMS: No records.\n"); return; }
-    int minI = 0, maxI = 0; double sum = 0.0;
-    for (int i = 0; i < dbCount; i++) {
-        sum += db[i].mark;
-        if (db[i].mark < db[minI].mark) minI = i;
-        if (db[i].mark > db[maxI].mark) maxI = i;
+    if (dbCount == 0) {
+        printf("CMS: No records.\n");
+        return;
     }
-    printf("Total: %d\nAverage: %.2f\nHighest: %.2f (%s)\nLowest: %.2f (%s)\n",
-        dbCount, (float)(sum / dbCount), db[maxI].mark, db[maxI].name,
-        db[minI].mark, db[minI].name);
+
+    printf("Choose mode:\n");
+    printf("1. Whole database\n");
+    printf("2. Specific programme\n");
+    printf("Enter choice: ");
+
+    int choice;
+    if (scanf("%d", &choice) != 1) {
+        while (getchar() != '\n');
+        printf("CMS: Invalid input.\n");
+        return;
+    }
+    while (getchar() != '\n');
+
+    Student* list = NULL;
+    int listcount = 0;
+
+    if (choice == 2) {
+        char programme[MAX_PROG];
+        printf("Enter programme name: ");
+        fgets(programme, sizeof(programme), stdin);
+        programme[strcspn(programme, "\r\n")] = 0;
+
+        for (int i = 0; i < dbCount; i++) {
+            if (_stricmp(db[i].programme, programme) == 0)
+                listcount++;
+        }
+        if (listcount == 0) {
+            printf("CMS: No records found for programme '%s'.\n", programme);
+            return;
+        }
+        list = malloc(sizeof(Student) * listcount);
+        if (!list) {
+            printf("CMS: No records in memory .\n");
+            return;
+        }
+
+        int pos = 0;
+        for (int i = 0; i < dbCount; i++) {
+            if (_stricmp(db[i].programme, programme) == 0)
+                list[pos++] = db[i];
+        }
+    }
+    else {
+        listcount = dbCount;
+        list = malloc(sizeof(Student) * dbCount);
+        if (!list) {
+            printf("CMS: No records in memory .\n");
+            return;
+        }
+        memcpy(list, db, sizeof(Student) * dbCount);
+    }
+    int minI = 0, maxI = 0; double sum = 0.0;
+    for (int i = 0; i < listcount; i++) {
+        sum += list[i].mark;
+        if (list[i].mark < list[minI].mark) minI = i;
+        if (list[i].mark > list[maxI].mark) maxI = i;
+    }
+    printf("Total: %d\n", listcount);
+    printf("Average: %.2f\n", (float)(sum / listcount));
+    printf("Highest: %.2f (%s)\n", list[maxI].mark, list[maxI] .name);
+    printf("Lowest: %.2f (%s)\n", list[minI].mark, list[minI].name);
+
+    free(list);
 }
 
 void cms_grade(int id) {
@@ -118,7 +176,6 @@ void cms_grade(int id) {
         db[idx].id, db[idx].name, db[idx].mark, gradeBand(db[idx].mark));
 
 }
-
 
 void cms_toppercent(float percent) {
     if (dbCount == 0) {
@@ -145,7 +202,6 @@ void cms_toppercent(float percent) {
 
 	Student* list = NULL;
 	int listcount = 0;
-    int count = 0;
     if (choice == 2) {
         char programme[MAX_PROG];
         printf("Enter programme name: ");
@@ -171,15 +227,6 @@ void cms_toppercent(float percent) {
             if (_stricmp(db[i].programme, programme) == 0)
                 list[pos++] = db[i];
         }
-
-        int count = (int)(listcount * (percent / 100.0f));
-        if (count < 1) count = 1;
-        printf("Top %.2f%% (%d students):\n", percent, count);
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printOne(&list[i]);
-        }
-
     }
     else {
         listcount = dbCount;
@@ -189,15 +236,19 @@ void cms_toppercent(float percent) {
             return;
         }
         memcpy(list, db, sizeof(Student) * dbCount);
-        qsort(list, dbCount, sizeof(Student), cmpMarkDesc);
-        count = (int)(dbCount * (percent / 100.0f));
-        if (count < 1) count = 1;
-        printf("Top %.2f%% (%d students):\n", percent, count);
-        printHeader();
-        for (int i = 0; i < count; i++)
-            printOne(&list[i]);
-        }
+    }
+	qsort(list, listcount, sizeof(Student), cmpMarkDesc);
+    int count = (int)(listcount * (percent / 100.0f));
+    if (count < 1) 
+        count = 1;
+    printf("Top %.2f%% (%d students):\n", percent, count);
+    printHeader();
+    for (int i = 0; i < count; i++) {
+        printOne(&list[i]);
+    }
     free(list);
 }
+
+
 
 
