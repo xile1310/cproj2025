@@ -2,20 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "cms.h"
 #include "storage.h"
 
-int stricmp(const char* a, const char* b) {
-    while (*a && *b) {
-        char ca = tolower((unsigned char)*a);
-        char cb = tolower((unsigned char)*b);
-        if (ca != cb)
-            return ca - cb;
-        a++;
-        b++;
-    }
-    return tolower((unsigned char)*a) - tolower((unsigned char)*b);
-}
 static void printHeader(void) {
     printf("%-10s %-30s %-24s %-6s\n", "ID", "Name", "Programme", "Mark");
     printf("%-10s %-30s %-24s %-6s\n", "----------", "------------------------------", "------------------------", "------");
@@ -209,4 +199,5 @@ void cms_toppercent(float percent) {
         }
     free(list);
 }
+
 
