@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#ifndef _WIN32
+#include <strings.h> // for linux/mac user only because windows user is able to use _stricmp from string.h
+#define _stricmp strcasecmp
+#endif
 #include "cms.h"
 #include "storage.h"
 
