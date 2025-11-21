@@ -10,22 +10,26 @@ Student db[MAX_STUDENTS];
 int     dbCount = 0;
 static char openedFile[256] = "";
 
-//small string helpers
+//small string helper functions
 
+//remove leading whoitespace
 static char *lstrip(char *s) {
-    while (*s && gotspace((unsigned char)*s)) {
+    while (*s && ((unsigned char)*s)) {
         s++;
     }
     return s;
 }
 
+//remove trailing whitespace
 static void rstrip(char *s) {
     size_t len = strlen(s);
-    while (len > 0 && gotspace((unsigned char)s[len - 1])) {
+    while (len > 0 && isspace((unsigned char)s[len - 1])) {
         s[--len] = '\0';
     }
 }
 
+
+//trim both leading and trainkling whitespace
 static void trim(char *s) {
     char *start = lstrip(s);
     if (start != s) {
@@ -34,20 +38,21 @@ static void trim(char *s) {
     rstrip(s);
 }
 
-//comparators for qsort
-
+//comparators for qsort, ID ascending
 int compareIdAsc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
     const Student *y = (const Student *)b;
     return x->id - y->id;
 }
 
+//ID descinding
 int compareIdDesc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
     const Student *y = (const Student *)b;
     return y->id - x->id;
 }
 
+// mark ascending
 int compareMarkAsc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
     const Student *y = (const Student *)b;
@@ -57,6 +62,7 @@ int compareMarkAsc(const void *a, const void *b) {
     return 0;
 }
 
+//mark descending
 int compareMarkDesc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
     const Student *y = (const Student *)b;
@@ -67,7 +73,6 @@ int compareMarkDesc(const void *a, const void *b) {
 }
 
 //lookup helper
-
 int findIndexById(int id) {
     for (int i = 0; i < dbCount; i++) {
         if (db[i].id == id) return i;
@@ -76,7 +81,6 @@ int findIndexById(int id) {
 }
 
 //parsing a data line
-
 static int parseDataLine(const char *line, Student *out) {
     char buf[512];
     strncpy(buf, line, sizeof(buf) - 1);
