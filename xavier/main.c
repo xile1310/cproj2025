@@ -1,10 +1,14 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
+
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <strings.h>          
+#define _stricmp strcasecmp   
 #include "cms.h"
 
-static void printDeclaration(void) {
+
+static void Declaration(void) {
     printf("Declaration\n");
     printf("SIT's policy on copying does not allow students to copy source code or assessment solutions from another person, AI, or other places.\n");
     printf("We hereby declare that we understand and agree to the policy and did not copy or share our code.\n");
@@ -12,7 +16,7 @@ static void printDeclaration(void) {
     printf("We agree that we did not copy any code directly from AI-generated sources.\n\n");
 }
 
-static void printHelp(void) {
+static void forHelp(void) {
     printf("\nCommands:\n");
     printf("  OPEN <filename>\n");
     printf("  SHOW ALL\n");
@@ -46,7 +50,7 @@ static int parseIdToken(const char* line, int* outId) {
 }
 
 int main(void) {
-    printDeclaration();
+    Declaration();
     printf("Welcome to CMS. Type HELP to see commands.\n\n");
 
     char line[512];
@@ -66,6 +70,8 @@ int main(void) {
             if (*fn == '\0') printf("CMS: Usage: OPEN <filename>\n");
             else cms_open(fn);
         }
+
+        
         else if (strcmp(cmd, "SHOW") == 0) {
             if (_stricmp(arg1, "ALL") == 0) {
                 if (_stricmp(arg2, "SORT") == 0) {
@@ -108,7 +114,7 @@ int main(void) {
             else 
                 printf("CMS: Usage: TOPPERCENT <percent>\n");
         }
-        else if (strcmp(cmd, "HELP") == 0) printHelp();
+        else if (strcmp(cmd, "HELP") == 0) forHelp();
         else if (strcmp(cmd, "EXIT") == 0 || strcmp(cmd, "QUIT") == 0) break;
         else printf("CMS: Unknown command. Type HELP.\n");
     }
