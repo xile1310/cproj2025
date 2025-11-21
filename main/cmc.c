@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
-#include <strings.h>          // for strcasecmp
-#define _stricmp strcasecmp   // alias to keep your existing code
 #include "cms.h"
 #include "storage.h"
 
@@ -199,6 +197,7 @@ void cms_toppercent(float percent) {
 
 	int listcount = 0;
     Student* list = filterstudent(&listcount);
+	if (!list) return;
 	qsort(list, listcount, sizeof(Student), cmpMarkDesc);
     int count = (int)(listcount * (percent / 100.0f));
     if (count < 1) 
