@@ -22,6 +22,71 @@ static const char* gradeBand(float m) {
     if (m >= 65) return "B-"; if (m >= 60) return "C+"; if (m >= 55) return "C"; if (m >= 50) return "D"; return "F";
 }
 
+static Student* filterstudent(int* outcount) {
+    *outcount = 0;
+    if (dbCount == 0) {
+        printf("CMS: No records.\n");
+        return NULL;
+    }
+
+    printf("Choose mode:\n");
+    printf("1. Whole database\n");
+    printf("2. Specific programme\n");
+    printf("Enter choice: ");
+
+    int choice;
+    if (scanf("%d", &choice) != 1) {
+        while (getchar() != '\n');
+        printf("CMS: Invalid input.\n");
+        return NULL;
+    }
+    while (getchar() != '\n');
+    if(choice != 1 && choice != 2) {
+        printf("CMS: Invalid choice.\n");
+        return NULL;
+	}
+
+    Student* list = NULL;
+
+    if (choice == 2) {
+        char programme[MAX_PROG];
+        printf("Enter programme name: ");
+        fgets(programme, sizeof(programme), stdin);
+        programme[strcspn(programme, "\r\n")] = 0;
+
+        for (int i = 0; i < dbCount; i++) {
+            if (_stricmp(db[i].programme, programme) == 0)
+                (*outcount)++;
+        }
+        if (*outcount == 0) {
+            printf("CMS: No records found for programme '%s'.\n", programme);
+            return NULL;
+        }
+        list = malloc(sizeof(Student) * (*outcount));
+        if (!list) {
+            printf("CMS: No records in memory .\n");
+            return NULL;
+        }
+
+        int pos = 0;
+        for (int i = 0; i < dbCount; i++) {
+            if (_stricmp(db[i].programme, programme) == 0)
+                list[pos++] = db[i];
+        }
+    }
+    else {
+        *outcount = dbCount;
+        list = malloc(sizeof(Student) * dbCount);
+        if (!list) {
+            printf("CMS: No records in memory .\n");
+            return NULL;
+        }
+        memcpy(list, db, sizeof(Student) * dbCount);
+    }
+    return list;
+}
+
+
 void cms_open(const char* filename) { loadDatabase(filename); }
 void cms_save(void) { saveDatabase(); }
 void cms_export_csv(const char* filename) { exportCSV(filename); }
@@ -101,62 +166,9 @@ void cms_delete(int id) {
 }
 
 void cms_summary(void) {
-    if (dbCount == 0) {
-        printf("CMS: No records.\n");
-        return;
-    }
-
-    printf("Choose mode:\n");
-    printf("1. Whole database\n");
-    printf("2. Specific programme\n");
-    printf("Enter choice: ");
-
-    int choice;
-    if (scanf("%d", &choice) != 1) {
-        while (getchar() != '\n');
-        printf("CMS: Invalid input.\n");
-        return;
-    }
-    while (getchar() != '\n');
-
-    Student* list = NULL;
     int listcount = 0;
-
-    if (choice == 2) {
-        char programme[MAX_PROG];
-        printf("Enter programme name: ");
-        fgets(programme, sizeof(programme), stdin);
-        programme[strcspn(programme, "\r\n")] = 0;
-
-        for (int i = 0; i < dbCount; i++) {
-            if (_stricmp(db[i].programme, programme) == 0)
-                listcount++;
-        }
-        if (listcount == 0) {
-            printf("CMS: No records found for programme '%s'.\n", programme);
-            return;
-        }
-        list = malloc(sizeof(Student) * listcount);
-        if (!list) {
-            printf("CMS: No records in memory .\n");
-            return;
-        }
-
-        int pos = 0;
-        for (int i = 0; i < dbCount; i++) {
-            if (_stricmp(db[i].programme, programme) == 0)
-                list[pos++] = db[i];
-        }
-    }
-    else {
-        listcount = dbCount;
-        list = malloc(sizeof(Student) * dbCount);
-        if (!list) {
-            printf("CMS: No records in memory .\n");
-            return;
-        }
-        memcpy(list, db, sizeof(Student) * dbCount);
-    }
+    Student * list = filterstudent(&listcount);
+    if (!list) return;
     int minI = 0, maxI = 0; double sum = 0.0;
     for (int i = 0; i < listcount; i++) {
         sum += list[i].mark;
@@ -180,65 +192,13 @@ void cms_grade(int id) {
 }
 
 void cms_toppercent(float percent) {
-    if (dbCount == 0) {
-        printf("CMS: No records.\n");
-        return;
-    }
     if (percent <= 0 || percent > 100) {
         printf("CMS: Invalid percent value.\n");
         return;
     }
 
-    printf("Choose mode:\n");
-    printf("1. Whole database\n");
-    printf("2. Specific programme\n");
-    printf("Enter choice: ");
-
-    int choice;
-    if (scanf("%d", &choice) != 1) {
-        while (getchar() != '\n');
-        printf("CMS: Invalid input.\n");
-        return;
-    }
-    while (getchar() != '\n');
-
-	Student* list = NULL;
 	int listcount = 0;
-    if (choice == 2) {
-        char programme[MAX_PROG];
-        printf("Enter programme name: ");
-        fgets(programme, sizeof(programme), stdin);
-        programme[strcspn(programme, "\r\n")] = 0;
-
-        for (int i = 0; i < dbCount; i++) {
-            if (_stricmp(db[i].programme, programme) == 0)
-                listcount++;
-        }
-        if (listcount == 0) {
-            printf("CMS: No records found for programme '%s'.\n", programme);
-            return;
-        }
-        list = malloc(sizeof(Student) * listcount);
-        if (!list) {
-            printf("CMS: No records in memory .\n");
-            return;
-        }
-
-        int pos = 0;
-        for (int i = 0; i < dbCount; i++) {
-            if (_stricmp(db[i].programme, programme) == 0)
-                list[pos++] = db[i];
-        }
-    }
-    else {
-        listcount = dbCount;
-        list = malloc(sizeof(Student) * dbCount);
-        if (!list) {
-            printf("CMS: No records in memory .\n");
-            return;
-        }
-        memcpy(list, db, sizeof(Student) * dbCount);
-    }
+    Student* list = filterstudent(&listcount);
 	qsort(list, listcount, sizeof(Student), cmpMarkDesc);
     int count = (int)(listcount * (percent / 100.0f));
     if (count < 1) 
@@ -250,6 +210,3 @@ void cms_toppercent(float percent) {
     }
     free(list);
 }
-
-
-
