@@ -37,7 +37,7 @@ static Student* filterstudent(int* outcount) {
     int choice;
     if (scanf("%d", &choice) != 1) {
         while (getchar() != '\n');
-        printf("CMS: Invalid input.\n");
+        printf("CMS: Invalid choice.\n");
         return NULL;
     }
     while (getchar() != '\n');
