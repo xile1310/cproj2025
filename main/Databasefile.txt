@@ -1,0 +1,10 @@
+Table Name: StudentRecords
+ID	Name	Programme	Mark
+2301234	Joshua Chen	Software Enginnering	70.50
+2201234	Issac Teo	Computer Science	63.40
+2304567	John Levoy	Digital Supply Chain	85.90
+2401256	Max Ingram	Digital Supply Chain	47.90
+2205678	Malcom Ng	Computer Science	72.58
+2402378	Isabelle Tan	Digital Supply Chain	91.70
+2201728	Asher Ong	Digital Supply Chain	74.20
+2301487	Tricia Lee	Digital Supply Chain	64.70
