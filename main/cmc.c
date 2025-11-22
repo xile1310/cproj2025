@@ -22,14 +22,14 @@ static void printOne(const Student* s) {
 static const char* gradeBand(float m) {
     if (m >= 85) return "A"; if (m >= 80) return "A-"; if (m >= 75) return "B+"; if (m >= 70) return "B";
     if (m >= 65) return "B-"; if (m >= 60) return "C+"; if (m >= 55) return "C"; if (m >= 50) return "D"; return "F";
-}
+} // User can change the grade banding as needed
 
 static Student* filterstudent(int* outcount) {
     *outcount = 0;
     if (dbCount == 0) {
         printf("CMS: No records.\n");
         return NULL;
-    }
+    } // Check for records in database
 
     printf("Choose mode:\n");
     printf("1. Whole database\n");
@@ -41,12 +41,12 @@ static Student* filterstudent(int* outcount) {
         while (getchar() != '\n');
         printf("CMS: Invalid choice.\n");
         return NULL;
-    }
+    } // ensure input is integer
     while (getchar() != '\n');
     if(choice != 1 && choice != 2) {
         printf("CMS: Invalid choice.\n");
         return NULL;
-	}
+	} //ensure integer is either 1 or 2
 
     Student* list = NULL;
 
@@ -58,23 +58,23 @@ static Student* filterstudent(int* outcount) {
 
         for (int i = 0; i < dbCount; i++) {
             if (_stricmp(db[i].programme, programme) == 0)
-                (*outcount)++;
+                (*outcount)++; // Count matching record
         }
         if (*outcount == 0) {
             printf("CMS: No records found for programme '%s'.\n", programme);
             return NULL;
-        }
+        } // Error message if programme cannot be found
         list = malloc(sizeof(Student) * (*outcount));
         if (!list) {
             printf("CMS: No records in memory .\n");
             return NULL;
-        }
+        } // Memory allocation check
 
         int pos = 0;
         for (int i = 0; i < dbCount; i++) {
             if (_stricmp(db[i].programme, programme) == 0)
                 list[pos++] = db[i];
-        }
+        } // Copy all matches
     }
     else {
         *outcount = dbCount;
@@ -84,7 +84,7 @@ static Student* filterstudent(int* outcount) {
             return NULL;
         }
         memcpy(list, db, sizeof(Student) * dbCount);
-    }
+    } // Copy whole database
     return list;
 }
 
@@ -169,13 +169,13 @@ void cms_delete(int id) {
 
 void cms_summary(void) {
     int listcount = 0;
-    Student * list = filterstudent(&listcount);
-    if (!list) return;
+    Student * list = filterstudent(&listcount); // Get filtered student list
+    if (!list) return; // Check if list is valid
     int minI = 0, maxI = 0; double sum = 0.0;
     for (int i = 0; i < listcount; i++) {
-        sum += list[i].mark;
-        if (list[i].mark < list[minI].mark) minI = i;
-        if (list[i].mark > list[maxI].mark) maxI = i;
+        sum += list[i].mark; // Calculate sum of marks
+        if (list[i].mark < list[minI].mark) minI = i; // Find index of minimum mark
+        if (list[i].mark > list[maxI].mark) maxI = i; // Find index of maximum mark
     }
     printf("Total: %d\n", listcount);
     printf("Average: %.2f\n", (float)(sum / listcount));
@@ -190,26 +190,25 @@ void cms_grade(int id) {
     if (idx == -1) { printf("CMS: ID=%d not found.\n", id); return; }
     printf("CMS: ID=%d, Name=%s, Mark=%.2f, Grade=%s\n",
         db[idx].id, db[idx].name, db[idx].mark, gradeBand(db[idx].mark));
-
-}
+} // Calculate and display grade for a specific student ID by comparing the mark to the grade band
 
 void cms_toppercent(float percent) {
     if (percent <= 0 || percent > 100) {
         printf("CMS: Invalid percent value.\n");
         return;
-    }
+    } // Ensure percentage value is valid
 
 	int listcount = 0;
-    Student* list = filterstudent(&listcount);
+    Student* list = filterstudent(&listcount); // Get filtered student list
 	if (!list) return;
-	qsort(list, listcount, sizeof(Student), cmpMarkDesc);
-    int count = (int)(listcount * (percent / 100.0f));
+	qsort(list, listcount, sizeof(Student), cmpMarkDesc); // Sort list by mark descending
+    int count = (int)(listcount * (percent / 100.0f)); // Calculate number of top students
     if (count < 1) 
-        count = 1;
+        count = 1; // Ensure at least one student is shown
     printf("Top %.2f%% (%d students):\n", percent, count);
     printHeader();
     for (int i = 0; i < count; i++) {
         printOne(&list[i]);
     }
     free(list);
-}
+} // Display top percentage of students based on their marks
