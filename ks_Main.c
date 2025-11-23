@@ -43,7 +43,7 @@ int main(void) {
 
         // normalise to upper case for command comparison
         // so user can type in any case and it will still work
-        // etc: "open", "Open", "OPEN" all will work
+        // example like: "open", "Open", "OPEN" all will work
         for (char* p = cmd; *p; ++p) *p = (char)toupper(*p);
 
         
