@@ -80,15 +80,33 @@ int main(void) {
         //handle SHOW commands (like SHOW ALL, SHOW SUMMARY...)
         else if (strcmp(cmd, "SHOW") == 0) {
             if (_stricmp(arg1, "ALL") == 0) {
-                if (_stricmp(arg2, "SORT") == 0) {
-                    char field[16] = { 0 }, ord[16] = { 0 };
-                    sscanf(inputline, "%*s %*s %*s %*s %15s %15s", field, ord); //default to ASC if order missing
-                    cms_show_all_sorted(field, (strlen(ord) ? ord : "ASC"));
+                // Strict parsing: only accept exact forms
+                char t1[64] = { 0 }, t2[64] = { 0 }, t3[64] = { 0 }, t4[64] = { 0 }, t5[64] = { 0 }, t6[64] = { 0 };
+                int n = sscanf(inputline, "%63s %63s %63s %63s %63s %63s", t1, t2, t3, t4, t5, t6);
+                if (n == 2) {
+                    cms_show_all();
                 }
-                else cms_show_all();
+                else if (n == 6) {
+                    // Expect: SHOW ALL SORT BY <ID|MARK> <ASC|DESC>
+                    if (_stricmp(t3, "SORT") == 0 && _stricmp(t4, "BY") == 0) {
+                        if ((_stricmp(t5, "ID") == 0 || _stricmp(t5, "MARK") == 0) &&
+                            (_stricmp(t6, "ASC") == 0 || _stricmp(t6, "DESC") == 0)) {
+                            cms_show_all_sorted(t5, t6);
+                        }
+                        else {
+                            printf("CMS: Invalid SHOW command. Type HELP.\n");
+                        }
+                    }
+                    else {
+                        printf("CMS: Invalid SHOW command. Type HELP.\n");
+                    }
+                }
+                else {
+                    printf("CMS: Invalid SHOW command. Type HELP.\n");
+                }
             }
             else if (_stricmp(arg1, "SUMMARY") == 0) cms_summary();
-            else printf("CMS: Unknown SHOW option.\n");
+            else printf("CMS: Unknown SHOW option. Type HELP.\n");
         }
    
         else if (strcmp(cmd, "INSERT") == 0) cms_insert();  //INSERT adds new record
