@@ -6,8 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h> // toupper (converts lowercase letters to uppercase)
-#include <strings.h>          
+#ifndef _WIN32
+#include <strings.h> // for linux/mac user only because windows user is able to use _stricmp from string.h      
 #define _stricmp strcasecmp   // make _stricmp work like strcasecmp
+#endif
 #include "cms.h" //cms function declarations
 
 // print academic integrity declaration
