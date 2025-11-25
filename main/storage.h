@@ -6,23 +6,23 @@
 #define MAX_PROG     64
 
 typedef struct {
-    int   id;
-    char  name[MAX_NAME];
-    char  programme[MAX_PROG];
-    float mark;
+    int   id; // id
+    char  name[MAX_NAME]; //namee
+    char  programme[MAX_PROG]; //student programme
+    float mark; // marks in decimal
 } Student;
 
-/* Global database in RAM */
+// Global database in RAM 
 extern Student db[MAX_STUDENTS];
 extern int     dbCount;
 
-/* Sorting comparators for qsort */
+// Sorting comparators for qsort 
 int cmpIdAsc   (const void *a, const void *b);
 int cmpIdDesc  (const void *a, const void *b);
 int cmpMarkAsc (const void *a, const void *b);
 int cmpMarkDesc(const void *a, const void *b);
 
-/* Storage / file functions */
+// Storage / file functions 
 int  loadDatabase (const char *filename);
 int  saveDatabase (void);
 int  exportCSV    (const char *filename);
