@@ -9,7 +9,7 @@ Student db[MAX_STUDENTS];
 int     dbCount = 0;
 static char openedFile[256] = "";
 
-/* ---------- small string helpers ---------- */
+// small string helpers
 
 static char *lstrip(char *s) {
     while (*s && isspace((unsigned char)*s)) {
@@ -33,7 +33,7 @@ static void trim(char *s) {
     rstrip(s);
 }
 
-/* ---------- comparators for qsort ---------- */
+// comparators for qsort
 
 int cmpIdAsc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
@@ -41,12 +41,14 @@ int cmpIdAsc(const void *a, const void *b) {
     return x->id - y->id;
 }
 
+// Descending
 int cmpIdDesc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
     const Student *y = (const Student *)b;
     return y->id - x->id;
 }
 
+// Ascending
 int cmpMarkAsc(const void *a, const void *b) {
     const Student *x = (const Student *)a;
     const Student *y = (const Student *)b;
@@ -65,8 +67,7 @@ int cmpMarkDesc(const void *a, const void *b) {
     return 0;
 }
 
-/* ---------- lookup helper ---------- */
-
+// lookup helper 
 int findIndexById(int id) {
     for (int i = 0; i < dbCount; i++) {
         if (db[i].id == id) return i;
@@ -74,8 +75,7 @@ int findIndexById(int id) {
     return -1;
 }
 
-/* ---------- parsing a data line ---------- */
-
+// parsing a data line
 static int parseDataLine(const char *line, Student *out) {
     char buf[512];
     strncpy(buf, line, sizeof(buf) - 1);
@@ -83,10 +83,10 @@ static int parseDataLine(const char *line, Student *out) {
 
     char *p = lstrip(buf);
     if (!isdigit((unsigned char)*p)) {
-        return 0;    /* not a data line (probably header) */
+        return 0;  
     }
 
-    /* Expect: ID \t Name \t Programme \t Mark */
+//  Expect: ID \t Name \t Programme \t Mark 
     char *tok1 = strtok(buf, "\t");
     char *tok2 = strtok(NULL, "\t");
     char *tok3 = strtok(NULL, "\t");
@@ -108,8 +108,7 @@ static int parseDataLine(const char *line, Student *out) {
     return 1;
 }
 
-/* ---------- load / save / export ---------- */
-
+// load / save / export 
 int loadDatabase(const char *filename) {
     FILE *f = fopen(filename, "r");
     if (!f) {
@@ -138,7 +137,7 @@ int loadDatabase(const char *filename) {
 }
 
 int saveDatabase(void) {
-    if (openedFile[0] == '\0') {   /* BUG FIX: was '!openedFile[0] == '\\0'' */
+    if (openedFile[0] == '\0') {   
         printf("CMS: No file opened.\n");
         return 0;
     }
@@ -149,7 +148,7 @@ int saveDatabase(void) {
         return 0;
     }
 
-    /* Simple header + data rows */
+    // Simple header + data rows 
     fprintf(f, "Table Name: StudentRecords\n");
     fprintf(f, "ID\tName\tProgramme\tMark\n");
     for (int i = 0; i < dbCount; i++) {
@@ -171,7 +170,8 @@ int exportCSV(const char *filename) {
 
     fprintf(f, "ID,Name,Programme,Mark\n");
     for (int i = 0; i < dbCount; i++) {
-        /* assumes no commas in name/programme */
+
+// assumes no commas in name/programme 
         fprintf(f, "%d,%s,%s,%.2f\n",
                 db[i].id, db[i].name, db[i].programme, db[i].mark);
     }
