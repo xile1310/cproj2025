@@ -119,7 +119,8 @@ void cms_show_all_sorted(const char* field, const char* order) {
 void cms_insert(void) {
     if (dbCount >= MAX_STUDENTS) { printf("CMS: Database full.\n"); return; }
     Student s = { 0 };
-    printf("Enter ID (integer): "); if (scanf("%d", &s.id) != 1) { while (getchar() != '\n'); return; }
+    printf("Enter ID (integer): "); if (scanf("%d", &s.id) != 1) { while (getchar() != '\n'); 
+        return; }
     while (getchar() != '\n');
     if (findIndexById(s.id) != -1) { printf("CMS: ID already exists.\n"); return; }
     printf("Enter Name: "); fgets(s.name, sizeof(s.name), stdin); s.name[strcspn(s.name, "\r\n")] = 0;
